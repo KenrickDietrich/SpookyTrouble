@@ -13,12 +13,6 @@ class Actor extends GameObject {
     super(x_, y_);
   }
 
-  /**
-   * start a new actor
-   * @param x_        x location
-   * @param y_        y location
-   * @param fileName_ file location of the actor image
-   */
   Actor(float x_, float y_, String fileName_) {
     super(x_, y_);
     img = loadImage(fileName_);
@@ -43,9 +37,6 @@ class Actor extends GameObject {
     popMatrix();
   }
 
-  /**
-   * Offscreen Switch
-   */
   void offScreenS(float screenExtention) {
     if (loc.x < 0 - img.width/2       -screenExtention)
       loc.x = width + img.width/2     +screenExtention;

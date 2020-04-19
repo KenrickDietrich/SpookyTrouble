@@ -6,6 +6,8 @@ class Player extends Actor {
   boolean jumping = false;
   float jumpTime = 0;
   float jumpDelay = 0;
+  boolean batsSpawned = false;
+
 
   int lastMilAni;
   int frameC;
@@ -63,19 +65,14 @@ class Player extends Actor {
   void movementControl(PVector input_) {
     // speedup for slowdown the input vector by delta
     input_.mult(inputDelta);
-
     // gravity
     input_.add(new PVector(0, gravity));
-
     // make input the acc
     acc = input_;
-
     // limit speed of player
     vel.limit(velLimit);
-
     //movement dampening on x axis
     vel.sub(new PVector(vel.x*dragX*deltaTime, 0));
-
     // calculate physics
     simplePhysicsCal();
   }
@@ -105,18 +102,28 @@ class Player extends Actor {
       frameC = min;
     else if (!loop && frameC > max)
       frameC = max;
-
     img = images.get(frameC);
   }
 
   void checkScene(String direction) {
-
-
     if (direction == "next") {
       sceneIndex += 1;
     }
     if (direction == "previous") {
       sceneIndex -= 1;
+    }
+    if (direction == "open") {
+      sceneIndex = 3;
+    }
+  }
+
+  void interact() {   
+    if (loc.x > itemKey.loc.x - 50 && loc.x < itemKey.loc.x + 50) {
+      keyPickUp = true;
+    }
+    if (keyPickUp == true && sceneIndex == 0 && loc.x > 820 && loc.x < 930) {
+      sceneIndex = 3;
+      endTimer = millis();
     }
   }
 
@@ -131,8 +138,6 @@ class Player extends Actor {
 
     if (img != null)
       image(img, 0, 0);
-
-    noTint();
     popMatrix();
   }
 
@@ -143,8 +148,15 @@ class Player extends Actor {
     topWall   = loc.y-cHeight/2 < 0;
     bottomWall= loc.y+cHeight > height;
 
+    if (loc.x > width/2 && sceneIndex == 1 && !batsSpawned) {
+      spawnController();
+      batsSound = new SoundFile(Main.this, "data/bats.mp3");
+      batsSound.play();
+      batsSpawned = true;
+    }
+
     if (rightWall) {
-      if (sceneIndex != scenes.size() -1) {
+      if (sceneIndex != scenes.size() -2) {
         loc.x = 0 +  cWidth/2;
         checkScene("next");
       } else { 
