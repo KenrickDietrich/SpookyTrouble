@@ -6,7 +6,6 @@ class Player extends Actor {
   boolean jumping = false;
   float jumpTime = 0;
   float jumpDelay = 0;
-  boolean batsSpawned = false;
 
 
   int lastMilAni;
@@ -80,6 +79,7 @@ class Player extends Actor {
   void animationController() {
     if (upHold && jumping) {
       animate(29, 43, animationSpeed, false);
+      walkSound.stop();
     } else if (rightHold) { 
       imgFlip = false;
       animate(14, 28, animationSpeed, true);
@@ -118,15 +118,18 @@ class Player extends Actor {
   }
 
   void interact() {   
-    if (loc.x > itemKey.loc.x - 50 && loc.x < itemKey.loc.x + 50) {
+    if (loc.x > itemKey.loc.x - 50 && loc.x < itemKey.loc.x + 50 && sceneIndex == 2 && !keyPickUp) {
       keyPickUp = true;
+      pickUpSound = new SoundFile(Main.this, "data/pickup.mp3");
+      pickUpSound.play();
     }
     if (keyPickUp == true && sceneIndex == 0 && loc.x > 820 && loc.x < 930) {
       sceneIndex = 3;
+      doorSound = new SoundFile(Main.this, "data/door.mp3");
+      doorSound.play();
       endTimer = millis();
     }
   }
-
 
   @Override
     void drawImage() {
